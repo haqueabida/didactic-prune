@@ -47,7 +47,7 @@ freq_dates = freq_dict(dateonly)
 filt_freq_dates ={i:freq_dates[i] for i in freq_dates if i>='2015-04-16'}
 
 post_act = []
-for f in filt_freq_dates:
+for f in sorted(filt_freq_dates.keys()):
     if(f>'2015-08-23'):
         countunique = ga.num_user_sessions(f, f)
         post_act.append([f, filt_freq_dates[f], countunique])

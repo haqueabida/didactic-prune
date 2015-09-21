@@ -196,20 +196,22 @@ or 30daysAgo (whatever number of days you like)
 
 """
 def num_user_sessions(start = 'yesterday', end='yesterday'):
+    #THE NEW GA
     service, profile = scopes2()
     
     data = service.data().ga().get(
     ids='ga:' + profile,
     start_date=start,
     end_date=end,
-    metrics='ga:users', dimensions='ga:dimension1').execute()
+    metrics='ga:users', dimensions='ga:userType').execute()
     
     try:
-        num = [int(i[0]) for i in data['rows']]
+        num = int(data['totalsForAllResults']['ga:users'])
     except KeyError:
-        num = []
-    
-    return len(num)
+        num = 0
+        
+    #return num
+    return num
 
 
 def num_user_sessions2(start = '2015-04-16', end='2015-04-16'):
