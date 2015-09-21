@@ -16,12 +16,6 @@ def isoDate():
     iso = date.isoformat(today)
     return iso
     
-def isoTime():
-    return (time.strftime("%H%M%S"))
-
-def return_unix_midnight():
-	return int(time.mktime(map(int, datetime.datetime.now().strftime('%Y,%m,%d,-1,0,0,0,0,0').split(",")))-86400)
-
 def human_datetime(z):
     z = z/1000
     g = time.localtime(z)
@@ -54,13 +48,16 @@ filt_freq_dates ={i:freq_dates[i] for i in freq_dates if i>='2015-04-16'}
 
 post_act = []
 for f in filt_freq_dates:
-    print f
-    countunique = len(ga.num_user_sessions(f, f))
-    post_act.append([f, filt_freq_dates[f], countunique])
+    if(f>'2015-08-23'):
+        countunique = ga.num_user_sessions(f, f)
+        post_act.append([f, filt_freq_dates[f], countunique])
+    else:
+        countunique1 = ga.num_user_sessions2(f,f)
+        post_act.append([f, filt_freq_dates[f], countunique])
     
 df2 = pd.DataFrame(post_act, columns = ['Date', 'How many posts', 'Unique users'])
 
-df2 = pd.to_csv('post_activity'+isoDate()+".csv")
+df2.to_csv('post_activity'+isoDate()+".csv")
     
     
     

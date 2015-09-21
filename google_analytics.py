@@ -73,6 +73,36 @@ def get_first_profile_id(service):
 
   return None
 
+def get_second_profile_id(service):
+      # Use the Analytics service object to get the second profile id.
+
+  # Get a list of all Google Analytics accounts for this user
+  accounts = service.management().accounts().list().execute()
+
+  if accounts.get('items'):
+    # Get the first Google Analytics account.
+    account = accounts.get('items')[1].get('id')
+
+    # Get a list of all the properties for the first account.
+    properties = service.management().webproperties().list(
+        accountId=account).execute()
+
+    if properties.get('items'):
+      # Get the first property id.
+      property = properties.get('items')[0].get('id')
+
+      # Get a list of all views (profiles) for the first property.
+      profiles = service.management().profiles().list(
+          accountId=account,
+          webPropertyId=property).execute()
+
+      if profiles.get('items'):
+        # return the first view (profile) id.
+        return profiles.get('items')[0].get('id')
+
+  return None
+    
+
 
 def get_results(service, profile_id):
   # Use the Analytics Service Object to query the Core Reporting API
@@ -116,6 +146,23 @@ def scopes():
   
   return service, profile
 
+def scopes2():
+        # Define the auth scopes to request.
+  scope = ['https://www.googleapis.com/auth/analytics.readonly']
+
+  # Use the developer console and replace the values with your
+  # service account email and relative location of your key file.
+  service_account_email = '509426457680-pfsj9033r8190lhov0flhlcucnoc2418@developer.gserviceaccount.com'
+  key_file_location = 'client_secrets.p12'
+
+  # Authenticate and construct service.
+  service = get_service('analytics', 'v3', scope, key_file_location,
+    service_account_email)
+  profile = get_second_profile_id(service)
+  
+  return service, profile
+    
+
 """
 Gets all the users Google thinks are new
 """
@@ -149,7 +196,7 @@ or 30daysAgo (whatever number of days you like)
 
 """
 def num_user_sessions(start = 'yesterday', end='yesterday'):
-    service, profile = scopes()
+    service, profile = scopes2()
     
     data = service.data().ga().get(
     ids='ga:' + profile,
@@ -161,8 +208,25 @@ def num_user_sessions(start = 'yesterday', end='yesterday'):
         num = [int(i[0]) for i in data['rows']]
     except KeyError:
         num = []
+    
+    return len(num)
+
+
+def num_user_sessions2(start = '2015-04-16', end='2015-04-16'):
+    #THE OLD GA
+    service, profile = scopes()
+    
+    data = service.data().ga().get(
+    ids='ga:'+profile,
+    start_date=start,
+    end_date=end,
+    metrics='ga:users', dimensions='ga:userType').execute()
+    
+    try:
+        num = int(data['totalsForAllResults']['ga:users'])
+    except KeyError:
+        num = 0
         
+    #return num
     return num
 
-#serv = services()
-#print serv['rows']
