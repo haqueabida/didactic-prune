@@ -52,7 +52,7 @@ for f in filt_freq_dates:
         countunique = ga.num_user_sessions(f, f)
         post_act.append([f, filt_freq_dates[f], countunique])
     else:
-        countunique1 = ga.num_user_sessions2(f,f)
+        countunique = ga.num_user_sessions2(f,f)
         post_act.append([f, filt_freq_dates[f], countunique])
     
 df2 = pd.DataFrame(post_act, columns = ['Date', 'How many posts', 'Unique users'])
